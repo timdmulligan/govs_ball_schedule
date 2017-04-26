@@ -9,35 +9,49 @@ library(stringi)
 shinyServer(function(input, output, session) {
   
 #Read in Gov's Ball Data
-  gbe_data<-reactive({
+  fest_data<-reactive({
     con = dbConnect(SQLite(), dbname="pitchfork-data-shiny.db")
-    gbe <- dbGetQuery(con, "SELECT artist, popularity, pf_mean + pf_count AS critical, genre, day  
-                            FROM govs_ball_enriched")
-    gbe[is.na(gbe$critical),]$critical<- mean(gbe$critical, na.rm = T)
+    gbe <- dbGetQuery(con, "SELECT artist, popularity, followers, pf_mean AS critical,
+                                   genre, day, festival 
+                            FROM fest_data_enriched
+                            WHERE followers > 1000")
+
+    if (input$critical_check != T){
+      gbe <- gbe[!(is.na(gbe$critical)),]
+    } else {
+      gbe[is.na(gbe$critical),]$critical<- mean(gbe$critical, na.rm = T)
+    }
+
     if (input$genre_filter != "All"){
       gbe <- gbe[gbe$genre == input$genre_filter,]
+    }
+    
+    if (input$festival_filter != "All Festivals"){
+      gbe <- gbe[gbe$festival == input$festival_filter,]
     }
     gbe
   })
   
   output$myChart <- renderPlotly({
-    data <- gbe_data()
+    data <- fest_data()
     #browser()
     if (input$group_filter == "Genre"){
       groupby = data$genre
+    } else if (input$group_filter == "Festival"){
+      groupby = data$festival
     } else {
       groupby = data$day
     }
-    p <- plot_ly(x = data$popularity,
-                 y = data$critical,
+    p <- plot_ly(x = data$critical,
+                 y = data$followers,
                  color = groupby,
                  mode = "markers",
                  text = data$artist,
                  marker = list(size = 10)
                  )
     p <- layout(p,
-                yaxis = list(title = 'Critical Score'),
-                xaxis = list(title = 'Popularity'),
+                yaxis = list(title = 'Followers on Spotify'),
+                xaxis = list(title = 'Critical Score'),
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)'
     )
@@ -45,7 +59,7 @@ shinyServer(function(input, output, session) {
   
   
   output$table <- renderDataTable({
-    data <- gbe_data()
+    data <- fest_data()
     data
   }, options = list(pageLength = 10), selection = "single")
   

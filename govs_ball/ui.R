@@ -20,9 +20,14 @@ shinyUI(fluidPage(
                    This app leverages data crawled from Pitchfork and Spotify to help you prepare."),
                  p(""),
                  selectInput(
+                   "festival_filter",
+                   "Select a Festival:",
+                   choices = list("All Festivals", "Governor's Ball", "Bonnaroo", "Lollapalooza")
+                 ),
+                 selectInput(
                    "group_filter",
-                   "Group By:",
-                   choices = list("Genre", "Day")
+                   "Group Chart Markers By:",
+                   choices = list("Genre", "Day", "Festival")
                  ),
                  selectInput(
                    "genre_filter",
@@ -34,6 +39,7 @@ shinyUI(fluidPage(
                                   "Pop/R&B",
                                   "Electronic")
                  ),
+                 checkboxInput("critical_check", label = "Include Non-Reviewed Artists", value = F),
                  downloadButton('downloadData', 'Download')
                ),
                mainPanel(
