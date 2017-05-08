@@ -3,6 +3,7 @@ library(DT)
 library(shiny)
 library(plotly)
 library(shinythemes)
+library(rsconnect)
 # deployApp("govs_ball_schedule/govs_ball/", appName = "govs_ball")
 
 shinyUI(fluidPage(
