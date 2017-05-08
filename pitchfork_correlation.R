@@ -1,8 +1,8 @@
 library("RSQLite")
 library(plotly)
 library(Hmisc)
-Sys.setenv("plotly_username"="tartrang")
-Sys.setenv("plotly_api_key"="AlVlnMoVUk0kCag3qSjQ")
+Sys.setenv("plotly_username"="USERNAME")
+Sys.setenv("plotly_api_key"="API KEY")
 
 setwd("~/govs_ball_schedule/")
 con = dbConnect(SQLite(), dbname="pitchfork-data.db")
