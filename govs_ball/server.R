@@ -10,11 +10,10 @@ shinyServer(function(input, output, session) {
   
 #Read in Gov's Ball Data
   fest_data<-reactive({
-    con = dbConnect(SQLite(), dbname="pitchfork-data-shiny.db")
+    con = dbConnect(SQLite(), dbname="pitchfork-data.db")
     gbe <- dbGetQuery(con, "SELECT artist, popularity, followers, pf_mean AS critical,
-                                   genre, day, festival 
-                            FROM fest_data_enriched
-                            WHERE followers > 1000")
+                                   genre, day, festival, stage, time
+                            FROM fest_data_enriched")
 
     if (input$critical_check != T){
       gbe <- gbe[!(is.na(gbe$critical)),]
@@ -39,18 +38,22 @@ shinyServer(function(input, output, session) {
       groupby = data$genre
     } else if (input$group_filter == "Festival"){
       groupby = data$festival
+    } else if (input$group_filter == "Stage"){
+      groupby = data$stage
+    } else if (input$group_filter == "Time"){
+      groupby = data$time
     } else {
       groupby = data$day
     }
     p <- plot_ly(x = data$critical,
-                 y = data$followers,
+                 y = log(data$followers),
                  color = groupby,
                  mode = "markers",
                  text = data$artist,
                  marker = list(size = 10)
                  )
     p <- layout(p,
-                yaxis = list(title = 'Followers on Spotify'),
+                yaxis = list(title = 'Followers on Spotify (Log)'),
                 xaxis = list(title = 'Critical Score'),
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)'

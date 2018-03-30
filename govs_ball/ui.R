@@ -28,7 +28,7 @@ shinyUI(fluidPage(
                  selectInput(
                    "group_filter",
                    "Group Chart Markers By:",
-                   choices = list("Genre", "Day", "Festival")
+                   choices = list("Genre", "Day", "Festival", "Stage")
                  ),
                  selectInput(
                    "genre_filter",
